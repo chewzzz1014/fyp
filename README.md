@@ -1,11 +1,11 @@
 # Label Studio
 1. Create venv
 ```
-python -m venv ner-env
+python -m venv venv
 ```
 2. Activate venv
 ```
-source ner-env/Scripts/activate
+source venv/Scripts/activate
 ```
 3. Install Label Studio
 ```
