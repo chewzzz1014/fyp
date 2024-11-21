@@ -20,3 +20,8 @@ label-studio
 label-studio export <project-id> <export-format> --export-path=<output-path>
 ```
 
+# FastAPI
+Run application
+```
+uvicorn backend.main:app --reload
+```
