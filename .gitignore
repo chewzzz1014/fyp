@@ -3,3 +3,4 @@ venv/
 .jovianrc
 .swo
 .swp
+__pycache__/

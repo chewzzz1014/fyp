@@ -21,6 +21,10 @@ label-studio export <project-id> <export-format> --export-path=<output-path>
 ```
 
 # FastAPI
+Import trained model in zip file form
+```
+unzip <zip-file-path> -d <target-dir>
+```
 Run application
 ```
 uvicorn backend.main:app --reload
