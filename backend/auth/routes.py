@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from backend.db.connection import SessionLocal
 from backend.db.models import User
 from .schema import UserCreate, UserLogin
@@ -18,12 +19,16 @@ def get_db():
 # User Signup
 @router.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    # Check if email already exists
+    # check if email already exists
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+    # Check if username already exists
+    db_user = db.query(User).filter(User.username == user.username).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
 
-    # Create new user
+    # create new user
     hashed_password = hash_password(user.password)
     db_user = User(username=user.username, email=user.email, password_hash=hashed_password)
     db.add(db_user)
@@ -49,6 +54,10 @@ def login(user: UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = D
     if not db_user or not verify_password(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
+    db_user.last_login = func.now()
+    db.commit()
+    db.refresh(db_user)
+    
     # Generate tokens
     access_token = Authorize.create_access_token(subject=str(db_user.id))
     refresh_token = Authorize.create_refresh_token(subject=str(db_user.id))
