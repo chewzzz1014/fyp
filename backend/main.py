@@ -1,45 +1,25 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-import spacy
-from pathlib import Path
-import string
-
-# Load the trained SpaCy NER model
-MODEL_PATH = Path(__file__).resolve().parent.parent / "ner-trained-models" / "spacy_output" / "model-best"
-
-try:
-    nlp = spacy.load(MODEL_PATH)
-except Exception as e:
-    raise RuntimeError(f"Failed to load SpaCy model: {e}")
+# fastapi
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+# ner
+from backend.ner.routes import router as ner_router
+# auth
+from backend.auth.routes import router as auth_router
+from backend.db.connection import database
 
 app = FastAPI()
 
-# Define input schema
-class NERRequest(BaseModel):
-    text: str
+origins = [
+    "http://localhost:3000",  # Next.js frontend
+]
 
-# Define output schema (optional, for structured response)
-class NERResponse(BaseModel):
-    entities: list
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/")
-def home():
-    return {"message": "Welcome to the NER model API. Use /predict to analyze text."}
-
-def preprocess_input_text(text):
-    text = text.lower()
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    return text
-
-@app.post("/predict", response_model=NERResponse)
-def predict(request: NERRequest):
-    if not request.text.strip():
-        raise HTTPException(status_code=400, detail="Input text cannot be empty.")
-    
-    # doc = nlp(preprocess_input_text(request.text))
-    doc = nlp(request.text)
-    entities = [
-        {"text": ent.text, "start": ent.start_char, "end": ent.end_char, "label": ent.label_}
-        for ent in doc.ents
-    ]
-    return {"entities": entities}
+app.include_router(auth_router, prefix="/auth")
+app.include_router(ner_router, prefix="/ner")
