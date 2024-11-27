@@ -87,6 +87,7 @@ executing==0.8.3
 expiringdict==1.2.2
 fastapi==0.115.5
 fastapi-cli==0.0.5
+fastapi-jwt-auth==0.5.0
 fastavro==1.7.1
 fasteners==0.18
 fastjsonschema==2.15.3
@@ -248,7 +249,7 @@ pyasn1-modules==0.2.8
 pycocotools==2.0.6
 pycodestyle==2.9.1
 pycparser==2.21
-pydantic==2.7.3
+pydantic==1.10.19
 pydantic-extra-types==2.10.0
 pydantic-settings==2.6.1
 pydantic_core==2.18.4
@@ -258,6 +259,7 @@ pygal-maps-world==1.0.2
 pygalib==0.1.0
 pygame==2.1.2
 Pygments==2.14.0
+PyJWT==1.7.1
 pymongo==3.13.0
 pyparsing==2.4.7
 PyQt5==5.15.9

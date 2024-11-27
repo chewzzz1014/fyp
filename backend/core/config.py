@@ -10,3 +10,5 @@ if DATABASE_URL is None:
     raise ValueError(f"DATABASE_URL is not set in the environment variables or .env file. {env_path}")
 
 NER_MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "ner-trained-models" / "spacy_output" / "model-best"
+
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
