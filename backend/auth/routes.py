@@ -37,8 +37,8 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
 
     # Generate tokens
     Authorize = AuthJWT()
-    access_token = Authorize.create_access_token(subject=str(db_user.id))
-    refresh_token = Authorize.create_refresh_token(subject=str(db_user.id))
+    access_token = Authorize.create_access_token(subject=str(db_user.user_id))
+    refresh_token = Authorize.create_refresh_token(subject=str(db_user.user_id))
 
     return {
         "access_token": access_token,
@@ -59,8 +59,8 @@ def login(user: UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = D
     db.refresh(db_user)
     
     # Generate tokens
-    access_token = Authorize.create_access_token(subject=str(db_user.id))
-    refresh_token = Authorize.create_refresh_token(subject=str(db_user.id))
+    access_token = Authorize.create_access_token(subject=str(db_user.user_id))
+    refresh_token = Authorize.create_refresh_token(subject=str(db_user.user_id))
 
     return {
         "access_token": access_token,

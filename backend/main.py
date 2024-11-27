@@ -5,7 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.ner.routes import router as ner_router
 # auth
 from backend.auth.routes import router as auth_router
-from backend.db.connection import database
+# resume
+from backend.resume.routes import router as resume_router
 
 app = FastAPI()
 
@@ -23,3 +24,4 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/auth")
 app.include_router(ner_router, prefix="/ner")
+app.include_router(resume_router, prefix="/resume")

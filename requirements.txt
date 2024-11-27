@@ -261,6 +261,7 @@ pygame==2.1.2
 Pygments==2.14.0
 PyJWT==1.7.1
 pymongo==3.13.0
+PyMuPDF==1.24.14
 pyparsing==2.4.7
 PyQt5==5.15.9
 PyQt5-Qt5==5.15.2

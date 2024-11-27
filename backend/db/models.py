@@ -1,13 +1,27 @@
-from sqlalchemy import Column, Integer, String, TIMESTAMP, func
+from sqlalchemy import Column, Integer, String, TIMESTAMP, func, Text, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
     password_hash = Column(String)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     last_login = Column(TIMESTAMP, nullable=True)
+    
+class Resume(Base):
+    __tablename__ = 'resumes'
+    resume_id = Column(Integer, primary_key=True, autoincrement=True)
+    resume_name = Column(String, unique=True, nullable=False)
+    resume_text = Column(Text, nullable=False)
+    uploaded_on = Column(TIMESTAMP, server_default=func.now(), nullable=False)
+    ner_prediction = Column(Text, nullable=True)  # You can add NER predictions here
+    
+    user_id = Column(Integer, ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)  # Foreign key to User table
+    
+    # Relationship to user
+    user = relationship("User", back_populates="resumes")
