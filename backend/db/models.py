@@ -12,7 +12,10 @@ class User(Base):
     password_hash = Column(String)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     last_login = Column(TIMESTAMP, nullable=True)
-    
+
+    # Relationship to resumes
+    resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
+
 class Resume(Base):
     __tablename__ = 'resumes'
     resume_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -20,8 +23,8 @@ class Resume(Base):
     resume_text = Column(Text, nullable=False)
     uploaded_on = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     ner_prediction = Column(Text, nullable=True)  # You can add NER predictions here
-    
-    user_id = Column(Integer, ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)  # Foreign key to User table
-    
+
+    user_id = Column(Integer, ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
+
     # Relationship to user
     user = relationship("User", back_populates="resumes")
