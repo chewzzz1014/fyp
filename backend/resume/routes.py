@@ -15,6 +15,20 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/")
+async def get_user_resumes(
+    user_id: int = Depends(get_user_id_from_token),
+    db: Session = Depends(get_db)
+):
+    try:
+        # Fetch the list of resumes created by the user
+        resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
+
+        # Prepare the response with resume names and IDs
+        return [{"id": resume.resume_id, "name": resume.resume_name} for resume in resumes]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
 @router.post("/upload")
 async def upload_resume(
     file: UploadFile = File(...),
