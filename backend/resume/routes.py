@@ -25,7 +25,7 @@ async def get_user_resumes(
         resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
 
         # Prepare the response with resume names and IDs
-        return [{"id": resume.resume_id, "name": resume.resume_name} for resume in resumes]
+        return [{"resume_id": resume.resume_id, "resume_name": resume.resume_name, "resume_text": resume.resume_text} for resume in resumes]
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
