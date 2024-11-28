@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends, File, UploadFile
+from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from backend.db.connection import SessionLocal
 from backend.db.models import Resume, User
 from backend.resume.utils import parse_resume_text
+from backend.core.logger import logger
+from backend.auth.utils import get_user_id_from_token
 
 router = APIRouter()
 
@@ -15,12 +17,16 @@ def get_db():
 
 @router.post("/upload")
 async def upload_resume(
-    user_id: int, 
-    file: UploadFile = File(...), 
-    resume_name: str = "", 
+    file: UploadFile = File(...),
+    resume_name: str = Form(...), 
+    user_id: int = Depends(get_user_id_from_token),
     db: Session = Depends(get_db)
 ):
     try:
+        logger.info(f'user_id {user_id}')
+        logger.info(f'file {file}')
+        logger.info(f'resume_name {resume_name}')
+        
         if not file.filename.endswith(".pdf"):
             raise HTTPException(status_code=400, detail="Only PDF files are supported.")
 

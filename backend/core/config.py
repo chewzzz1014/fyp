@@ -12,3 +12,7 @@ if DATABASE_URL is None:
 NER_MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "ner-trained-models" / "spacy_output" / "model-best"
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+
+ALGORITHM = os.getenv("ALGORITHM")
+
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 30))
