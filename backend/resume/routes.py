@@ -21,7 +21,7 @@ async def get_user_resumes(
     db: Session = Depends(get_db)
 ):
     try:
-        # Fetch the list of resumes created by the user
+        # fetch the list of resumes created by the user
         resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
 
         # Prepare the response with resume names and IDs
