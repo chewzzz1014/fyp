@@ -3,3 +3,6 @@ venv/
 .jovianrc
 .swo
 .swp
+__pycache__/
+.env
+ner-trained-models/
