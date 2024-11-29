@@ -1,11 +1,9 @@
 import spacy
-import string
 from backend.core.config import NER_MODEL_PATH
+import re
 
-def preprocess_input_text(text):
-    text = text.lower()
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    return text
+def remove_non_alphanumeric(text):
+    return re.sub(r'[^a-zA-Z0-9\s]', '', text)
 
 def load_trained_mode():
     try:
@@ -13,3 +11,13 @@ def load_trained_mode():
         return nlp
     except Exception as e:
         raise RuntimeError(f"Failed to load SpaCy model: {e}")
+    
+def make_prediction(text):
+    nlp = load_trained_mode()
+
+    doc = nlp(text)
+    entities = [
+        {"text": ent.text, "start": ent.start_char, "end": ent.end_char, "label": ent.label_}
+        for ent in doc.ents
+    ]
+    return entities
