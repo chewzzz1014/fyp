@@ -4,7 +4,7 @@ from backend.db.connection import SessionLocal
 from backend.db.models import Resume, User
 from backend.resume.utils import parse_resume_text
 from backend.core.logger import logger
-from backend.auth.utils import get_user_id_from_token
+from backend.auth.utils import AuthJWT, get_user_id_from_token
 from backend.ner.utils import remove_non_alphanumeric, make_prediction
 import json
 
@@ -20,15 +20,26 @@ def get_db():
 @router.get("/")
 async def get_user_resumes(
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    Authorize: AuthJWT = Depends()
 ):
     try:
+        Authorize.jwt_required()
+
         # fetch the list of resumes created by the user
         resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
 
-        # Prepare the response with resume names and IDs
-        return [{"resume_id": resume.resume_id, "resume_name": resume.resume_name, "resume_text": resume.resume_text} for resume in resumes]
+        return [
+            {
+            "resume_id": resume.resume_id,
+            "resume_name": resume.resume_name,
+            "resume_text": resume.resume_text,
+            "ner_prediction": json.loads(resume.ner_prediction) if resume.ner_prediction else None
+            } for resume in resumes
+        ]
     except Exception as e:
+        if isinstance(e, HTTPException) and e.status_code == 401:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @router.post("/upload")
@@ -36,9 +47,12 @@ async def upload_resume(
     file: UploadFile = File(...),
     resume_name: str = Form(...), 
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    Authorize: AuthJWT = Depends()
 ):
     try:
+        Authorize.jwt_required()
+        
         logger.info(f'user_id {user_id}')
         logger.info(f'file {file}')
         logger.info(f'resume_name {resume_name}')
@@ -85,4 +99,6 @@ async def upload_resume(
     except HTTPException as http_error:
         raise http_error
     except Exception as e:
+        if isinstance(e, HTTPException) and e.status_code == 401:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

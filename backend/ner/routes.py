@@ -6,7 +6,10 @@ from backend.auth.utils import AuthJWT
 router = APIRouter()
 
 @router.post("/predict", response_model=NERResponse)
-def predict(request: NERRequest, Authorize: AuthJWT = Depends()):
+def predict(
+    request: NERRequest, 
+    Authorize: AuthJWT = Depends()
+):
     try:
         Authorize.jwt_required()
         if not request.text.strip():
