@@ -1,6 +1,6 @@
 import json
 from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from .schema import JobResumeRequest
 from backend.ner.utils import make_prediction
 from backend.db.utils import get_db
@@ -11,6 +11,58 @@ from .utils import calculate_job_resume_score
 from backend.core.logger import logger
 
 router = APIRouter()
+
+@router.get("/")
+def get_job_resume(
+    user_id: int = Depends(get_user_id_from_token),
+    db: Session = Depends(get_db),
+    Authorize: AuthJWT = Depends()
+):
+    try:
+        Authorize.jwt_required()
+
+        job_resumes = (
+            db.query(JobResume)
+            .options(
+                joinedload(JobResume.job),
+                joinedload(JobResume.resume)
+            )
+            .filter(JobResume.user_id == user_id)
+            .all()
+        )
+
+        result = [
+            {
+                "job_resume_id": job_resume.job_resume_id,
+                "user_id": job_resume.user_id,
+                "job_resume_score": job_resume.job_resume_score,
+                "created_at": job_resume.created_at,
+                "job": {
+                    "job_id": job_resume.job.job_id,
+                    "job_title": job_resume.job.job_title,
+                    "job_link": job_resume.job.job_link,
+                    "company_name": job_resume.job.company_name,
+                    "job_desc": job_resume.job.job_desc,
+                    "ner_prediction": json.loads(job_resume.job.ner_prediction) if job_resume.job.ner_prediction else None,
+                    "created_at": job_resume.job.created_at,
+                    "application_status": job_resume.job.application_status
+                } if job_resume.job else None,
+                "resume": {
+                    "resume_id": job_resume.resume.resume_id,
+                    "resume_name": job_resume.resume.resume_name,
+                    "resume_text": job_resume.resume.resume_text,
+                    "uploaded_on": job_resume.resume.uploaded_on,
+                    "ner_prediction": json.loads(job_resume.resume.ner_prediction) if job_resume.resume.ner_prediction else None,
+                } if job_resume.resume else None,
+            }
+            for job_resume in job_resumes
+        ]
+
+        return result
+    except Exception as e:
+        if isinstance(e, HTTPException) and e.status_code == 401:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @router.get("/{job_resume_id}")
 def get_job_resume(

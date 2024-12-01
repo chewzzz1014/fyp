@@ -13,6 +13,8 @@ from backend.resume.routes import router as resume_router
 from backend.job_resume.routes import router as job_resume_router
 # job
 from backend.job.routes import router as job_router
+# user
+from backend.profile.routes import router as profile_router
 
 init_db()
 
@@ -35,3 +37,4 @@ app.include_router(ner_router, prefix="/ner")
 app.include_router(resume_router, prefix="/resume")
 app.include_router(job_resume_router, prefix="/job-resume")
 app.include_router(job_router, prefix="/job")
+app.include_router(profile_router, prefix="/profile")

@@ -53,7 +53,8 @@ def get_user_from_token(token: str) -> User:
 
 class Settings(BaseModel):
     authjwt_secret_key: str = JWT_SECRET_KEY
-    authjwt_access_token_expires: int = ACCESS_TOKEN_EXPIRE_MINUTES
+    # authjwt_access_token_expires: int = ACCESS_TOKEN_EXPIRE_MINUTES
+    # authjwt_access_token_expires: int = 60
 
 @AuthJWT.load_config
 def get_config():
