@@ -13,9 +13,9 @@ class User(Base):
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     last_login = Column(TIMESTAMP, nullable=True)
 
-    # Relationship to resumes
+    # Relationships
     resumes = relationship("Resume", back_populates="user", cascade="all, delete-orphan")
-    # Relationship to job resumes
+    jobs = relationship("Job", back_populates="user", cascade="all, delete-orphan")
     job_resumes = relationship("JobResume", back_populates="user", cascade="all, delete-orphan")
 
 class Resume(Base):
@@ -28,9 +28,8 @@ class Resume(Base):
 
     user_id = Column(Integer, ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
 
-    # Relationship to user
+    # Relationships
     user = relationship("User", back_populates="resumes")
-    # Relationship to job resumes
     job_resumes = relationship("JobResume", back_populates="resume", cascade="all, delete-orphan")
     
     __table_args__ = (
@@ -54,11 +53,13 @@ class Job(Base):
     job_desc = Column(Text, nullable=False)
     ner_prediction = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
-
-    # Foreign key to JobStatus
-    status_id = Column(Integer, ForeignKey("job_status.status_id", ondelete="SET NULL"), nullable=True)
+    
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
+    application_status = Column(Integer, ForeignKey("job_status.status_id", ondelete="SET NULL"), nullable=True)
+    
 
     # Relationships
+    user = relationship("User", back_populates="jobs")
     status = relationship("JobStatus", back_populates="jobs")
     job_resumes = relationship("JobResume", back_populates="job", cascade="all, delete-orphan")
 
@@ -70,7 +71,6 @@ class JobResume(Base):
     resume_id = Column(Integer, ForeignKey("resumes.resume_id", ondelete="CASCADE"), nullable=False)
     job_id = Column(Integer, ForeignKey("jobs.job_id", ondelete="CASCADE"), nullable=False)
     job_resume_score = Column(Float, nullable=False)
-
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
 
     # Relationships

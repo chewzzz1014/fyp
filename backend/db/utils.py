@@ -1,8 +1,10 @@
-from sqlalchemy.orm import SessionLocal
-from backend.db.models import JobStatus
+# backend/db/utils.py
+
+from .models import JobStatus
+from .db_session import SessionLocal
 
 def preload_job_statuses():
-    statuses = ["Applied", "Interview Scheduled", "Offer Extended", "Rejected", "Withdrawn"]
+    statuses = ["Interested", "Applied", "Assessment", "Interviewing", "Offer", "Rejected"]
     session = SessionLocal()
     try:
         for status_name in statuses:

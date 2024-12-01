@@ -7,7 +7,7 @@ from backend.db.models import User
 from jose import JWTError, jwt
 
 from backend.db.models import User
-from backend.db.connection import SessionLocal
+from backend.db.db_session import SessionLocal
 from backend.core.config import JWT_SECRET_KEY, ALGORITHM
 from backend.core.logger import logger
 

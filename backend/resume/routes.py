@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
 from sqlalchemy.orm import Session
-from backend.db.connection import SessionLocal
+from backend.db.db_session import SessionLocal
 from backend.db.models import Resume, User
 from backend.resume.utils import parse_resume_text
 from backend.core.logger import logger
