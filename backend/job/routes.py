@@ -1,17 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from backend.db.db_session import SessionLocal
+from backend.db.utils import get_db
 from backend.auth.utils import AuthJWT, get_user_id_from_token
 from backend.db.models import JobStatus
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
         
 @router.get("/job-statuses")
 def protected(

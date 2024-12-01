@@ -1,8 +1,13 @@
-# backend/db/utils.py
-
 from .models import JobStatus
 from .db_session import SessionLocal
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        
 def preload_job_statuses():
     statuses = ["Interested", "Applied", "Assessment", "Interviewing", "Offer", "Rejected"]
     session = SessionLocal()

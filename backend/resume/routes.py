@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
 from sqlalchemy.orm import Session
-from backend.db.db_session import SessionLocal
+from backend.db.utils import get_db
 from backend.db.models import Resume, User
 from backend.resume.utils import parse_resume_text
 from backend.core.logger import logger
@@ -9,13 +9,6 @@ from backend.ner.utils import remove_non_alphanumeric, make_prediction
 import json
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/")
 async def get_user_resumes(

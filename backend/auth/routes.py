@@ -1,31 +1,19 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from backend.db.db_session import SessionLocal
+from backend.db.utils import get_db
 from backend.db.models import User
 from .schema import UserCreate, UserLogin
 from .utils import hash_password, verify_password, AuthJWT
 
 router = APIRouter()
 
-# Dependency for Database
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
-# User Signup
 @router.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
-    # check if email already exists
-    db_user = db.query(User).filter(User.email == user.email).first()
-    if db_user:
+    if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
-    # Check if username already exists
-    db_user = db.query(User).filter(User.username == user.username).first()
-    if db_user:
+    if db.query(User).filter(User.username == user.username).first():
         raise HTTPException(status_code=400, detail="Username already registered")
 
     # create new user
@@ -46,7 +34,7 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
         "msg": "User created successfully"
     }
 
-# User Login
+
 @router.post("/login")
 def login(user: UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     # Fetch user by email

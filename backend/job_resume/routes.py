@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from .schema import JobResumeRequest
 from backend.ner.utils import make_prediction
-from backend.db.db_session import SessionLocal
+from backend.db.utils import get_db
 from backend.auth.utils import AuthJWT, get_user_id_from_token
 from backend.db.models import Resume, Job, JobResume
 from backend.ner.utils import remove_non_alphanumeric, make_prediction
@@ -11,13 +11,6 @@ from .utils import calculate_job_resume_score
 from backend.core.logger import logger
 
 router = APIRouter()
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @router.get("/{job_resume_id}")
 def get_job_resume(

@@ -8,7 +8,7 @@ from jose import JWTError, jwt
 
 from backend.db.models import User
 from backend.db.db_session import SessionLocal
-from backend.core.config import JWT_SECRET_KEY, ALGORITHM
+from backend.core.config import JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from backend.core.logger import logger
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -53,6 +53,7 @@ def get_user_from_token(token: str) -> User:
 
 class Settings(BaseModel):
     authjwt_secret_key: str = JWT_SECRET_KEY
+    authjwt_access_token_expires: int = ACCESS_TOKEN_EXPIRE_MINUTES
 
 @AuthJWT.load_config
 def get_config():
