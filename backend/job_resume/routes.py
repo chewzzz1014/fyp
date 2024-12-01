@@ -62,7 +62,7 @@ def get_job_resume(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
        
 # add job
-@router.post("/", response_model=JobResumeRequest)
+@router.post("/")
 def predict(
     request: JobResumeRequest, 
     user_id: int = Depends(get_user_id_from_token),
