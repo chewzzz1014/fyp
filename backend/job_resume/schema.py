@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class JobResumeRequest(BaseModel):
+    job_id: int
     resume_id: int
     job_title: str
     job_link: str

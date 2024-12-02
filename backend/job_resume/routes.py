@@ -13,7 +13,7 @@ from backend.core.logger import logger
 router = APIRouter()
 
 @router.get("/")
-def get_job_resume(
+def get_all_job_resume(
     user_id: int = Depends(get_user_id_from_token),
     db: Session = Depends(get_db),
     Authorize: AuthJWT = Depends()
@@ -65,7 +65,7 @@ def get_job_resume(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
 
 @router.get("/{job_resume_id}")
-def get_job_resume(
+def get_job_resume_by_id(
     job_resume_id: int,
     user_id: int = Depends(get_user_id_from_token),
     db: Session = Depends(get_db),
@@ -108,60 +108,92 @@ def get_job_resume(
        
 # add job
 @router.post("/")
-def predict(
-    request: JobResumeRequest, 
+def add_job_resume(
+    request: JobResumeRequest,
     user_id: int = Depends(get_user_id_from_token),
     db: Session = Depends(get_db),
     Authorize: AuthJWT = Depends()
 ):
     try:
         Authorize.jwt_required()
-        
-        # Fetch resume
+
+        # Fetch resume and validate
         resume = db.query(Resume).filter(
-            Resume.resume_id == request.resume_id, Resume.user_id == user_id).first()
+            Resume.resume_id == request.resume_id,
+            Resume.user_id == user_id
+        ).first()
         if not resume:
             raise HTTPException(status_code=404, detail="Resume not found.")
 
-        # Perform NER on job description
-        cleaned_job_desc = remove_non_alphanumeric(request.job_desc)
-        job_ner_prediction = make_prediction(cleaned_job_desc)
+        # case when job_id is provided
+        # find job, find/add job resume
+        if request.job_id:
+            job = db.query(Job).filter(
+                Job.job_id == request.job_id,
+                Job.user_id == user_id
+            ).first()
+            if not job:
+                raise HTTPException(status_code=404, detail="Job not found.")
 
-        # Save job to the database
-        job = Job(
-            user_id=user_id,
-            job_title=request.job_title,
-            job_link=request.job_link,
-            company_name=request.company_name,
-            application_status=request.application_status,
-            job_desc=cleaned_job_desc,
-            ner_prediction=json.dumps(job_ner_prediction) if job_ner_prediction else None
-        )
-        db.add(job)
-        db.commit()
-        db.refresh(job)
+            job_resume = db.query(JobResume).filter(
+                JobResume.job_id == job.job_id,
+                JobResume.resume_id == resume.resume_id,
+                JobResume.user_id == user_id
+            ).first()
+            # Update job-resume score
+            updated_score = calculate_job_resume_score(resume.ner_prediction, job.ner_prediction)
+            if not job_resume:
+                job_resume = JobResume(
+                    user_id=user_id,
+                    resume_id=resume.resume_id,
+                    job_id=job.job_id,
+                    job_resume_score=updated_score
+                )
+                db.add(job_resume)
+                db.commit()
 
-        # Calculate job-resume score (implement scoring in utils)
-        score = calculate_job_resume_score(resume.ner_prediction, job.ner_prediction)
+            job_resume.job_resume_score = updated_score
+            db.commit()
 
-        # Save job-resume relationship
-        job_resume = JobResume(
-            user_id=user_id,
-            resume_id=resume.resume_id,
-            job_id=job.job_id,
-            job_resume_score=score
-        )
-        db.add(job_resume)
-        db.commit()
+        # case when job_id is not provided
+        # add job,add job resume
+        else:
+            cleaned_job_desc = remove_non_alphanumeric(request.job_desc)
+            job_ner_prediction = make_prediction(cleaned_job_desc)
+
+            # Save job to the database
+            job = Job(
+                user_id=user_id,
+                job_title=request.job_title,
+                job_link=request.job_link,
+                company_name=request.company_name,
+                application_status=request.application_status,
+                job_desc=cleaned_job_desc,
+                ner_prediction=json.dumps(job_ner_prediction) if job_ner_prediction else None
+            )
+            db.add(job)
+            db.commit()
+            db.refresh(job)
+
+            # Create job-resume relationship
+            score = calculate_job_resume_score(resume.ner_prediction, job.ner_prediction)
+            job_resume = JobResume(
+                user_id=user_id,
+                resume_id=resume.resume_id,
+                job_id=job.job_id,
+                job_resume_score=score
+            )
+            db.add(job_resume)
+            db.commit()
 
         return {
             "job_resume_id": job_resume.job_resume_id,
             "resume_text": resume.resume_text,
             "resume_ner_prediction": json.loads(resume.ner_prediction) if resume.ner_prediction else None,
-            "job_ner_prediction": job_ner_prediction,
+            "job_ner_prediction": json.loads(job.ner_prediction) if job.ner_prediction else None,
             "job_resume_score": job_resume.job_resume_score
         }
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        if isinstance(e, HTTPException) and e.status_code == 401:
-            raise HTTPException(status_code=401, detail="Unauthorized")
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")

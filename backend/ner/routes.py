@@ -6,7 +6,7 @@ from backend.auth.utils import AuthJWT
 router = APIRouter()
 
 @router.post("/predict", response_model=NERResponse)
-def predict(
+def ner_predict(
     request: NERRequest, 
     Authorize: AuthJWT = Depends()
 ):

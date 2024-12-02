@@ -11,7 +11,7 @@ import json
 router = APIRouter()
 
 @router.get("/")
-async def get_user_resumes(
+async def get_all_resumes(
     user_id: int = Depends(get_user_id_from_token),
     db: Session = Depends(get_db),
     Authorize: AuthJWT = Depends()
