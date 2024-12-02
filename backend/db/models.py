@@ -35,15 +35,17 @@ class Resume(Base):
     __table_args__ = (
         UniqueConstraint('user_id', 'resume_name', name='uq_user_resume_name'),
     )
-    
+
 class JobStatus(Base):
     __tablename__ = "job_status"
     status_id = Column(Integer, primary_key=True, autoincrement=True)
     status_name = Column(String, unique=True, nullable=False)
 
-    # Relationship to jobs
     jobs = relationship("Job", back_populates="status")
+    job_resumes = relationship("JobResume", back_populates="status")
     
+    __table_args__ = {"extend_existing": True}
+
 class Job(Base):
     __tablename__ = "jobs"
     job_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -55,14 +57,14 @@ class Job(Base):
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
     
     user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False)
-    application_status = Column(Integer, ForeignKey("job_status.status_id", ondelete="SET NULL"), nullable=True)
     
+    # Foreign key reference to job_status
+    status_id = Column(Integer, ForeignKey("job_status.status_id", ondelete="SET NULL"), nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="jobs")
-    status = relationship("JobStatus", back_populates="jobs")
     job_resumes = relationship("JobResume", back_populates="job", cascade="all, delete-orphan")
-
+    status = relationship("JobStatus", back_populates="jobs")  # Relationship to JobStatus
 
 class JobResume(Base):
     __tablename__ = "job_resumes"
@@ -73,10 +75,13 @@ class JobResume(Base):
     job_resume_score = Column(Float, nullable=False)
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)
 
+    application_status = Column(Integer, ForeignKey("job_status.status_id", ondelete="SET NULL"), nullable=True)
+
     # Relationships
     user = relationship("User", back_populates="job_resumes")
     resume = relationship("Resume", back_populates="job_resumes")
     job = relationship("Job", back_populates="job_resumes")
+    status = relationship("JobStatus", back_populates="job_resumes")
 
     __table_args__ = (
         UniqueConstraint("user_id", "resume_id", "job_id", name="uq_user_resume_job"),

@@ -1,7 +1,7 @@
 import json
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session, joinedload
-from .schema import JobResumeRequest
+from .schema import JobResumeRequest, UpdateApplicationStatusRequest
 from backend.ner.utils import make_prediction
 from backend.db.utils import get_db
 from backend.auth.utils import AuthJWT, get_user_id_from_token
@@ -36,6 +36,7 @@ def get_all_job_resume(
                 "job_resume_id": job_resume.job_resume_id,
                 "user_id": job_resume.user_id,
                 "job_resume_score": job_resume.job_resume_score,
+                "application_status": job_resume.application_status,
                 "created_at": job_resume.created_at,
                 "job": {
                     "job_id": job_resume.job.job_id,
@@ -45,7 +46,6 @@ def get_all_job_resume(
                     "job_desc": job_resume.job.job_desc,
                     "ner_prediction": json.loads(job_resume.job.ner_prediction) if job_resume.job.ner_prediction else None,
                     "created_at": job_resume.job.created_at,
-                    "application_status": job_resume.job.application_status
                 } if job_resume.job else None,
                 "resume": {
                     "resume_id": job_resume.resume.resume_id,
@@ -147,7 +147,8 @@ def add_job_resume(
                     user_id=user_id,
                     resume_id=resume.resume_id,
                     job_id=job.job_id,
-                    job_resume_score=updated_score
+                    job_resume_score=updated_score,
+                    application_status=request.application_status
                 )
                 db.add(job_resume)
                 db.commit()
@@ -167,7 +168,6 @@ def add_job_resume(
                 job_title=request.job_title,
                 job_link=request.job_link,
                 company_name=request.company_name,
-                application_status=request.application_status,
                 job_desc=cleaned_job_desc,
                 ner_prediction=json.dumps(job_ner_prediction) if job_ner_prediction else None
             )
@@ -181,7 +181,8 @@ def add_job_resume(
                 user_id=user_id,
                 resume_id=resume.resume_id,
                 job_id=job.job_id,
-                job_resume_score=score
+                job_resume_score=score,
+                application_status=request.application_status,
             )
             db.add(job_resume)
             db.commit()
@@ -196,4 +197,29 @@ def add_job_resume(
     except HTTPException as e:
         raise e
     except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
+
+@router.put("/application-status")
+def update_application_status(
+    request: UpdateApplicationStatusRequest, 
+    user_id: int = Depends(get_user_id_from_token),
+    db: Session = Depends(get_db),
+    Authorize: AuthJWT = Depends()
+):
+    try:
+        Authorize.jwt_required()
+        
+        # Fetch the job resume entry by ID
+        job_resume = db.query(JobResume).filter(JobResume.job_resume_id == request.job_resume_id, JobResume.user_id == user_id).first()
+
+        if not job_resume:
+            raise HTTPException(status_code=404, detail="Job resume not found.")
+
+        job_resume.application_status = request.new_status
+        db.commit()
+
+        return {"message": "Status updated successfully"}
+    except Exception as e:
+        if isinstance(e, HTTPException) and e.status_code == 401:
+            raise HTTPException(status_code=401, detail="Unauthorized")
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
