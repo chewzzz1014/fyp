@@ -1,0 +1,8 @@
+venv/
+.ipynb_checkpoints/
+.jovianrc
+.swo
+.swp
+__pycache__/
+.env
+ner-trained-models/
