@@ -175,6 +175,7 @@ def add_job_resume(
             db.commit()
             db.refresh(job)
 
+            # Create job-resume relationship
             score = calculate_job_resume_score(resume.ner_prediction, job.ner_prediction)
             job_resume = JobResume(
                 user_id=user_id,
