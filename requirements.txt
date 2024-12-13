@@ -48,7 +48,7 @@ cycler==0.11.0
 cymem==2.0.8
 Cython==0.29.33
 databases==0.9.0
-db-dtypes==1.0.3
+db-dtypes==1.0.4
 debugpy==1.6.6
 decorator==5.1.1
 defusedxml==0.7.1
@@ -208,6 +208,7 @@ notebook-shim==0.1.0
 numpy==1.24.4
 oauth2client==4.1.3
 oauthlib==3.2.0
+object-detection @ file:///C:/Users/USER/tensorflow-learning/Tensorflow/models/research
 objsize==0.6.1
 openai==1.52.2
 opencv-contrib-python==4.7.0.68
@@ -220,7 +221,7 @@ opt-einsum==3.3.0
 ordered-set==4.0.2
 orjson==3.8.6
 packaging==21.3
-pandas==2.1.3
+pandas==1.5.3
 pandocfilters==1.5.0
 parso==0.8.3
 passlib==1.7.4
