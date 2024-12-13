@@ -1,18 +1,18 @@
 import os
-from pathlib import Path
 from dotenv import load_dotenv
 
-env_path = Path(__file__).parent.parent / ".env"
-load_dotenv(dotenv_path=env_path)
+load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    raise ValueError(f"DATABASE_URL is not set in the environment variables or .env file. {env_path}")
-
-NER_MODEL_PATH = Path(__file__).resolve().parent.parent.parent / "ner-trained-models" / "spacy_output" / "model-best"
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 ALGORITHM = os.getenv("ALGORITHM")
 
 ACCESS_TOKEN_EXPIRE_SECONDS = int(os.getenv("ACCESS_TOKEN_EXPIRE_SECONDS", 3600))
+
+
+# gcp bucket
+BUCKET_NAME = os.getenv("MODEL_BUCKET_NAME")
+MODEL_FOLDER = os.getenv("MODEL_FOLDER")
+LOCAL_MODEL_PATH = os.getenv("LOCAL_MODEL_PATH")
