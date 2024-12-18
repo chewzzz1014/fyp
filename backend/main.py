@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.db.connection import init_db
 # ner
 from backend.ner.routes import router as ner_router
-from backend.ner.utils import download_model_from_gcs
+# from backend.ner.utils import download_model_from_gcs
 # auth
 from backend.auth.routes import router as auth_router
 # resume
@@ -37,10 +37,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if not os.path.exists(LOCAL_MODEL_PATH):
-    download_model_from_gcs()
-else:
-    logger.info('NER Model was downloaded.')
+# if not os.path.exists(LOCAL_MODEL_PATH):
+#     download_model_from_gcs()
+# else:
+#     logger.info('NER Model was downloaded.')
     
 app.include_router(auth_router, prefix="/auth")
 app.include_router(ner_router, prefix="/ner")

@@ -70,11 +70,9 @@ def add_job(
     try:
         Authorize.jwt_required()
 
-        # Perform NER on job description
         cleaned_job_desc = remove_non_alphanumeric(request.job_desc)
         job_ner_prediction = make_prediction(cleaned_job_desc)
 
-        # Save job to the database
         job = Job(
             user_id=user_id,
             job_title=request.job_title,
@@ -118,9 +116,9 @@ def update_job(
         job.job_title = request.job_title or job.job_title
         job.job_link = request.job_link or job.job_link
         job.company_name = request.company_name or job.company_name
-        job.job_desc = remove_non_alphanumeric(request.job_desc) or job.job_desc
 
         if request.job_desc and request.job_desc != job.job_desc:
+            job.job_desc = remove_non_alphanumeric(request.job_desc)
             job.ner_prediction = json.dumps(make_prediction(job.job_desc))
 
         db.commit()
