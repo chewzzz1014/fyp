@@ -21,8 +21,6 @@ from backend.profile.routes import router as profile_router
 from backend.core.config import LOCAL_MODEL_PATH
 from backend.core.logger import logger
 
-init_db()
-
 app = FastAPI()
 
 origins = [
@@ -41,6 +39,10 @@ app.add_middleware(
 #     download_model_from_gcs()
 # else:
 #     logger.info('NER Model was downloaded.')
+    
+@app.on_event("startup")
+async def on_startup():
+    await init_db()
     
 app.include_router(auth_router, prefix="/auth")
 app.include_router(ner_router, prefix="/ner")

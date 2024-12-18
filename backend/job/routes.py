@@ -1,6 +1,7 @@
 import json
 from fastapi import APIRouter, HTTPException, Depends, Path
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from backend.db.utils import get_db
 from backend.auth.utils import AuthJWT, get_user_id_from_token
 from backend.db.models import JobStatus, Job
@@ -11,15 +12,16 @@ from backend.core.logger import logger
 router = APIRouter()
 
 @router.get("/")
-def get_all_jobs(
+async def get_all_jobs(
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     Authorize: AuthJWT = Depends()
 ):
     try:
         Authorize.jwt_required()
         
-        jobs = db.query(Job).filter(Job.user_id == user_id).all()
+        result = await db.execute(select(Job).filter(Job.user_id == user_id))
+        jobs = result.scalars().all()
         
         logger.info(jobs)
         
@@ -42,15 +44,16 @@ def get_all_jobs(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
         
 @router.get("/job-statuses")
-def get_all_job_statuses(
+async def get_all_job_statuses(
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     Authorize: AuthJWT = Depends()
 ):
     try:
         Authorize.jwt_required()
         
-        job_statuses = db.query(JobStatus).all()
+        result = await db.execute(select(JobStatus))
+        job_statuses = result.scalars().all()
         
         return [
             {"status_id": job_status.status_id, "status_name": job_status.status_name} 
@@ -61,10 +64,10 @@ def get_all_job_statuses(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     
 @router.post("/")
-def add_job(
+async def add_job(
     request: AddJobRequest, 
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     Authorize: AuthJWT = Depends()
 ):
     try:
@@ -82,8 +85,8 @@ def add_job(
             ner_prediction=json.dumps(job_ner_prediction) if job_ner_prediction else None
         )
         db.add(job)
-        db.commit()
-        db.refresh(job)
+        await db.commit()
+        await db.refresh(job)
 
         return {
             "job_id": job.job_id,
@@ -99,17 +102,18 @@ def add_job(
         raise HTTPException(status_code=500, detail=f"Internal Server Error: {str(e)}")
     
 @router.put("/{job_id}")
-def update_job(
+async def update_job(
     request: UpdateJobRequest,
     job_id: int = Path(..., description="The job_id of the job to be updated"),
     user_id: int = Depends(get_user_id_from_token),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
     Authorize: AuthJWT = Depends()
 ):
     try:
         Authorize.jwt_required()
 
-        job = db.query(Job).filter(Job.job_id == job_id, Job.user_id == user_id).first()
+        result = await db.execute(select(Job).filter(Job.job_id == job_id, Job.user_id == user_id))
+        job = result.scalars().first()
         if not job:
             raise HTTPException(status_code=404, detail="Job not found")
 
@@ -121,8 +125,8 @@ def update_job(
             job.job_desc = remove_non_alphanumeric(request.job_desc)
             job.ner_prediction = json.dumps(make_prediction(job.job_desc))
 
-        db.commit()
-        db.refresh(job)
+        await db.commit()
+        await db.refresh(job)
 
         return {
             "job_id": job.job_id,

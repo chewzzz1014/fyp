@@ -7,7 +7,7 @@ class JobResumeRequest(BaseModel):
     job_title: str
     job_link: str
     company_name: str
-    application_status: str
+    application_status: int
     job_desc: str
     
 class UpdateApplicationStatusRequest(BaseModel):
