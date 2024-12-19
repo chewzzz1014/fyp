@@ -121,8 +121,9 @@ async def update_job(
         job.job_link = request.job_link or job.job_link
         job.company_name = request.company_name or job.company_name
 
-        if request.job_desc and request.job_desc != job.job_desc:
-            job.job_desc = remove_non_alphanumeric(request.job_desc)
+        cleaned_request_job_desc = remove_non_alphanumeric(request.job_desc)
+        if request.job_desc and (cleaned_request_job_desc != job.job_desc):
+            job.job_desc = cleaned_request_job_desc
             job.ner_prediction = json.dumps(make_prediction(job.job_desc))
 
         await db.commit()

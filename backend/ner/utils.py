@@ -3,6 +3,8 @@ from backend.core.config import NER_MODEL_PATH
 import re
 
 def remove_non_alphanumeric(text):
+    if text is None:
+        return ''
     return re.sub(r'[^a-zA-Z0-9\s]', '', text)
 def load_trained_mode():
     try:
