@@ -34,14 +34,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# if not os.path.exists(LOCAL_MODEL_PATH):
-#     download_model_from_gcs()
-# else:
-#     logger.info('NER Model was downloaded.')
     
 @app.on_event("startup")
 async def on_startup():
+    # if not os.path.exists(LOCAL_MODEL_PATH):
+    #     download_model_from_gcs()
+    # else:
+    #     logger.info('NER Model was downloaded.')
     await init_db()
     
 app.include_router(auth_router, prefix="/auth")
