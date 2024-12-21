@@ -1,1 +1,11 @@
-ner-trained-models/
+job_resume_score/
+tmp/
+venv/
+.venv/
+*.json
+*.csv
+*.ipynb
+.ipynb_chechkpoints
+.jovianrc
+.swo
+.swp

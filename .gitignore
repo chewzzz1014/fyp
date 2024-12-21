@@ -8,3 +8,4 @@ __pycache__/
 ner-trained-models/
 ner-fyp-*.json
 tmp/
+.venv/
