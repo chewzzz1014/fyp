@@ -1,4 +1,4 @@
-# spacy_ner_training.py
+# python spacy_ner_train.py > train_log.txt
 
 import json
 import os
