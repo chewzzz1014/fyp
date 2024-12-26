@@ -19,10 +19,10 @@ from flair.trainers import ModelTrainer
 
 # File structure: 
 # ner_datasets/
-# └── 1100_resumes_annotated.json
+# └── 1100_resumes_annotated.json (*)
 
 # flair_ner/
-# ├── flair_ner_train.py
+# ├── flair_ner_train.py (*)
 # ├── flair_train.txt
 # ├── flair_test.txt
 # ├── flair_output/

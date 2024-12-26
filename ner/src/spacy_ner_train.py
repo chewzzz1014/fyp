@@ -15,17 +15,17 @@ np.float_ = np.float64
 
 # File structure: 
 # ner_datasets/
-# └── 1100_resumes_annotated.json
+# └── 1100_resumes_annotated.json (*)
 
 # spacy_ner/
-# ├── spacy_ner_train.py
+# ├── spacy_ner_train.py (*)
 # ├── spacy_ner_data/
 # │   ├── train_data.spacy
 # │   └── test_data.spacy
 # ├── spacy_output/
 # │   ├── best-model/
 # │   └── last-model/
-# ├── config.cfg
+# ├── config.cfg (*)
 # └── train_log.txt
 JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"  # Update with the actual path to your JSON file
 SPACY_DATA_PATH = "spacy_ner_data"  # Directory to save .spacy files
