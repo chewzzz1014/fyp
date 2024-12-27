@@ -1,8 +1,14 @@
 from typing import List, Set
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import difflib
 import string
+import math
+
+def sigmoid(x: float, scale: float = 10, shift: float = 5) -> float:
+    """
+    Apply a sigmoid transformation to scale the score between 0 and 1.
+    """
+    return 1 / (1 + math.exp(-(x * scale - shift)))
 
 def normalize_skills(skills: Set[str]) -> List[str]:
     """
@@ -47,47 +53,3 @@ def compute_tfidf_similarity(skills1: List[str], skills2: List[str]) -> float:
     tfidf_matrix = vectorizer.fit_transform([' '.join(skills1), ' '.join(skills2)])
     
     return cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
-
-def compute_string_similarity(skills1: List[str], skills2: List[str]) -> float:
-    """
-    Compute string-based similarity using difflib.
-    
-    Args:
-        skills1 (List[str]): First set of skills
-        skills2 (List[str]): Second set of skills
-    
-    Returns:
-        float: Average string similarity score
-    """
-    if not skills1 or not skills2:
-        return 0.0
-    
-    # Compute pairwise similarities
-    similarities = []
-    for skill1 in skills1:
-        for skill2 in skills2:
-            # Use SequenceMatcher for string similarity
-            similarity = difflib.SequenceMatcher(None, skill1, skill2).ratio()
-            similarities.append(similarity)
-    
-    return sum(similarities) / len(similarities) if similarities else 0.0
-
-def compute_jaccard_similarity(skills1: List[str], skills2: List[str]) -> float:
-    """
-    Compute Jaccard similarity between two skill sets.
-    
-    Args:
-        skills1 (List[str]): First set of skills
-        skills2 (List[str]): Second set of skills
-    
-    Returns:
-        float: Jaccard similarity score
-    """
-    set1 = set(skills1)
-    set2 = set(skills2)
-    
-    # Compute Jaccard similarity
-    intersection = len(set1.intersection(set2))
-    union = len(set1.union(set2))
-    
-    return intersection / union if union > 0 else 0.0

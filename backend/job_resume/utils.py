@@ -1,5 +1,5 @@
 import json
-from .calc_score.cosine_similarity import normalize_skills, compute_tfidf_similarity, compute_string_similarity, compute_jaccard_similarity
+from .calc_score.cosine_similarity import normalize_skills, compute_tfidf_similarity, sigmoid
 
 def calculate_job_resume_score(
     resume_ner_prediction: str,
@@ -21,21 +21,10 @@ def calculate_job_resume_score(
     normalized_resume_skills = normalize_skills(resume_skills)
     normalized_job_skills = normalize_skills(job_skills)
     
-    # Calculate multiple similarity metrics
-    # 1. TF-IDF Cosine Similarity
+    # TF-IDF Cosine Similarity
     tfidf_similarity = compute_tfidf_similarity(normalized_resume_skills, normalized_job_skills)
     
-    # 2. String-based Similarity
-    string_similarity = compute_string_similarity(normalized_resume_skills, normalized_job_skills)
-    
-    # 3. Jaccard Similarity
-    jaccard_similarity = compute_jaccard_similarity(normalized_resume_skills, normalized_job_skills)
-    
-    # Weighted combination of similarities
-    final_similarity_score = (
-        0.5 * tfidf_similarity + 
-        0.3 * string_similarity + 
-        0.2 * jaccard_similarity
-    )
+    # Normalize similairy score
+    final_similarity_score = sigmoid(tfidf_similarity, scale=20, shift=3)
     
     return final_similarity_score
