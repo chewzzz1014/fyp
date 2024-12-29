@@ -1,4 +1,4 @@
-# python flair_ner_train.py > train_log.txt
+# python flair_ner_train.py | tee flair_train_log.txt
 
 import subprocess
 # pip install flair
@@ -29,7 +29,7 @@ from flair.trainers import ModelTrainer
 # │   ├── final-model.pt
 # │   ├── loss.tsv
 # │   └── training.log
-# └── train_log.txt
+# └── flair_train_log.txt
 
 JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
 OUTPUT_PATH = './flair_output'

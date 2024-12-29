@@ -1,8 +1,7 @@
-# python spacy_ner_train.py > train_log.txt
+# python spacy_ner_train.py | tee spacy_train_log.txt
 
 import json
 import os
-import random
 from sklearn.model_selection import train_test_split
 import spacy
 from spacy.tokens import DocBin
@@ -19,19 +18,19 @@ np.float_ = np.float64
 
 # spacy_ner/
 # ├── spacy_ner_train.py (*)
+# ├── config.cfg (*)
 # ├── spacy_ner_data/
 # │   ├── train_data.spacy
 # │   └── test_data.spacy
 # ├── spacy_output/
 # │   ├── best-model/
 # │   └── last-model/
-# ├── config.cfg (*)
-# └── train_log.txt
-JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"  # Update with the actual path to your JSON file
-SPACY_DATA_PATH = "spacy_ner_data"  # Directory to save .spacy files
-OUTPUT_PATH = "./spacy_output"  # Directory to save the trained model
-CONFIG_PATH = "./config.cfg"  # Path to SpaCy config file
-LOG_PATH = "./train_log.txt"  # Path to save training logs
+# └── spacy_train_log.txt
+
+JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
+SPACY_DATA_PATH = "spacy_ner_data"
+OUTPUT_PATH = "./spacy_output"
+CONFIG_PATH = "./config.cfg"
 
 # Ensure output directories exist
 os.makedirs(SPACY_DATA_PATH, exist_ok=True)
@@ -113,16 +112,14 @@ def main():
     train_doc_bin.to_disk(train_file)
     test_doc_bin.to_disk(test_file)
 
-    # Train the model and save output to a log file
-    with open(LOG_PATH, "w") as log_file:
-        train_command = [
-            "python", "-m", "spacy", "train", CONFIG_PATH,
-            "--output", OUTPUT_PATH, "--gpu-id", "0"
-        ]
-        subprocess.run(train_command, stdout=log_file, stderr=log_file)
+    # gpu-id == 1 : use all available GPUs for distributed training
+    # gpu-id == 0 : train on gpu with id 0
+    train_command = ["python", "-m", "spacy", "train", CONFIG_PATH,
+            "--output", OUTPUT_PATH, "--gpu-id", "1"
+    ]
+    subprocess.run(train_command)
 
     print(f"\nTraining complete. Model saved at: {OUTPUT_PATH}")
-    print(f"Training logs saved at: {LOG_PATH}")
 
 # Run script
 if __name__ == "__main__":
