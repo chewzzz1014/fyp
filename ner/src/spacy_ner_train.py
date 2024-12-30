@@ -1,5 +1,8 @@
 # python spacy_ner_train.py | tee spacy_train_log.txt
 
+# run task in background after logout
+# nohup python spacy_ner_train.py | tee spacy_train_log.txt &
+
 import json
 import os
 from sklearn.model_selection import train_test_split

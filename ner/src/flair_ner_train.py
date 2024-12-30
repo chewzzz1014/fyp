@@ -1,5 +1,8 @@
 # python flair_ner_train.py | tee flair_train_log.txt
 
+# run task in background after logout
+# nohup python flair_ner_train.py | tee flair_train_log.txt &
+
 import subprocess
 # pip install flair
 def install_dependencies():
