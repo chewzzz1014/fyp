@@ -44,9 +44,14 @@ os.makedirs(OUTPUT_PATH, exist_ok=True)
 # pip install "numpy<2"
 # python -m spacy download en_core_web_lg
 def install_dependencies():
+    # pip install
     subprocess.check_call(["pip", "install", "-U", "spacy", "numpy<2"])
     subprocess.check_call(["pip", "install", "git+https://github.com/explosion/spacy-transformers"])
     subprocess.check_call(["python", "-m", "spacy", "download", "en_core_web_lg"])
+    # conda install (run on HPC server)
+    # subprocess.check_call(["conda", "install", "-c", "conda-forge", "spacy", "numpy<2", "-y"])
+    # subprocess.check_call(["conda", "install", "-c", "conda-forge", "spacy-transformers", "-y"])
+    # subprocess.check_call(["python", "-m", "spacy", "download", "en_core_web_lg"])
 
 # Remove overlapping entities
 def remove_overlapping_entities(entities):

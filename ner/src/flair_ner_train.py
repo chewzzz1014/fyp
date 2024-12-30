@@ -6,7 +6,10 @@
 import subprocess
 # pip install flair
 def install_dependencies():
+    # pip install
     subprocess.check_call(["pip", "install", "flair"])
+    # conda install (run on HPC server)
+    # subprocess.check_call(["conda", "install", "-c", "conda-forge", "flair", "-y"])
 install_dependencies()
 
 import json
