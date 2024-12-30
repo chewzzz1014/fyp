@@ -1,7 +1,7 @@
 # python flair_ner_train.py | tee flair_train_log.txt
 
 # run task in background after logout
-# nohup python flair_ner_train.py | tee flair_train_log.txt &
+# nohup python flair_ner_train.py &
 
 import subprocess
 # pip install flair
@@ -32,7 +32,7 @@ from flair.trainers import ModelTrainer
 # │   ├── final-model.pt
 # │   ├── loss.tsv
 # │   └── training.log
-# └── flair_train_log.txt
+# └── nohup.out (auto generated log file for task running in bg)
 
 JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
 OUTPUT_PATH = './flair_output'

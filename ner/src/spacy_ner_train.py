@@ -1,7 +1,7 @@
 # python spacy_ner_train.py | tee spacy_train_log.txt
 
 # run task in background after logout
-# nohup python spacy_ner_train.py | tee spacy_train_log.txt &
+# nohup python spacy_ner_train.py &
 
 import json
 import os
@@ -28,7 +28,7 @@ np.float_ = np.float64
 # ├── spacy_output/
 # │   ├── best-model/
 # │   └── last-model/
-# └── spacy_train_log.txt
+# └── nohup.out (auto generated log file for task running in bg)
 
 JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
 SPACY_DATA_PATH = "spacy_ner_data"
