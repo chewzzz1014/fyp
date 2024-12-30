@@ -115,7 +115,7 @@ def main():
     # gpu-id == 1 : use all available GPUs for distributed training
     # gpu-id == 0 : train on gpu with id 0
     train_command = ["python", "-m", "spacy", "train", CONFIG_PATH,
-            "--output", OUTPUT_PATH, "--gpu-id", "1"
+            "--output", OUTPUT_PATH, "--gpu-id", "0"
     ]
     subprocess.run(train_command)
 
