@@ -1,6 +1,7 @@
+# 1. run task which terminate when session close
 # python flair_ner_train.py | tee flair_train_log.txt
 
-# run task in background after logout
+# 2. run task in background after logout (log file in nohup.out)
 # nohup python flair_ner_train.py &
 
 import subprocess
