@@ -62,7 +62,7 @@ TRAINING_CONFIG = {
 class NERConverter:
     def __init__(self):
         # Load pretrained model from Spacy library to create Spacy Doc object
-        self.nlp = spacy.load("en_core_web_sm")
+        self.nlp = spacy.load("en_core_web_lg")
 
     def get_bioes_label(self, token_index: int, entity_length: int, current_position: int, label: str) -> str:
         """
