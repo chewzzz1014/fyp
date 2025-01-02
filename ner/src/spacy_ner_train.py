@@ -18,7 +18,7 @@ np.float_ = np.float64
 
 # File structure: 
 # ner_datasets/
-# └── 1100_resumes_annotated.json (*)
+# └── 1142_resumes_annotated.json (*)
 
 # spacy_ner/
 # ├── spacy_ner_train.py (*)
@@ -31,7 +31,7 @@ np.float_ = np.float64
 # │   └── last-model/
 # └── nohup.out (auto generated log file for task running in bg)
 
-JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
+JSON_PATH = "../ner_datasets/1142_resumes_annotated.json"
 SPACY_DATA_PATH = "spacy_ner_data"
 OUTPUT_PATH = "./spacy_output"
 CONFIG_PATH = "./config.cfg"

@@ -26,7 +26,7 @@ from flair.trainers import ModelTrainer
 
 # File structure: 
 # ner_datasets/
-# └── 1100_resumes_annotated.json (*)
+# └── 1142_resumes_annotated.json (*)
 
 # flair_ner/
 # ├── flair_ner_train.py (*)
@@ -38,7 +38,7 @@ from flair.trainers import ModelTrainer
 # │   └── training.log
 # └── nohup.out (auto generated log file for task running in bg)
 
-JSON_PATH = "../ner_datasets/1100_resumes_annotated.json"
+JSON_PATH = "../ner_datasets/1142_resumes_annotated.json"
 OUTPUT_PATH = './flair_output'
 TRAINING_CONFIG = {
     'learning_rate': 0.1,  # Increased learning rate for faster convergence
