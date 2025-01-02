@@ -41,19 +41,18 @@ from flair.trainers import ModelTrainer
 JSON_PATH = "../ner_datasets/1142_resumes_annotated.json"
 OUTPUT_PATH = './flair_output'
 TRAINING_CONFIG = {
-    'learning_rate': 0.1,  # Increased learning rate for faster convergence
-    'mini_batch_size': 64,  # Increased batch size for better GPU utilization
-    'max_epochs': 150,  # Increased max epochs for better convergence
-    'patience': 8,  # Increased patience
-    'use_amp': True,  # Mixed precision training
-    'dropout': 0.3,  # Increased dropout for better regularization
-    'rnn_layers': 3,  # Increased number of RNN layers
-    'hidden_size': 512,  # Increased hidden size for better model capacity
+    'learning_rate': 0.05,
+    'mini_batch_size': 16,
+    'max_epochs': 50,
+    'patience': 5,
+    'use_amp': True,
+    'dropout': 0.2,
+    'rnn_layers': 2,
+    'hidden_size': 128,
     'embedding_sources': [
-        WordEmbeddings('glove'),  # GloVe word embeddings
-        FlairEmbeddings('news-forward', chars_per_chunk=512),  # Optimized forward Flair
-        FlairEmbeddings('news-backward', chars_per_chunk=512),  # Optimized backward Flair
-        WordEmbeddings('en-crawl')  # Additional FastText embeddings
+        WordEmbeddings('glove'),
+        FlairEmbeddings('news-forward'),
+        FlairEmbeddings('news-backward')
     ],
     'base_path': OUTPUT_PATH,
     'train_with_dev': True
@@ -223,38 +222,28 @@ def main():
 
     # 2. Configure tagger with memory and performance optimizations
     tagger = SequenceTagger(
-        hidden_size=TRAINING_CONFIG['hidden_size'],  # Increased hidden size for more capacity
+        hidden_size=TRAINING_CONFIG['hidden_size'],
         embeddings=embeddings,
         tag_dictionary=tag_dictionary,
         tag_type='ner',
         use_crf=True,
         tag_format='BIOES',
-        dropout=TRAINING_CONFIG['dropout'],  # Dropout for better capacity retention
-        rnn_layers=TRAINING_CONFIG['rnn_layers'],  # Number of RNN layers
-        use_rnn=True,
-        reproject_embeddings=True,  # Add embedding reprojection
-        rnn_type='LSTM',  # Explicitly use LSTM
+        dropout=TRAINING_CONFIG['dropout'],
+        rnn_layers=TRAINING_CONFIG['rnn_layers'],
     )
 
     # Train Flair NER model
     trainer = ModelTrainer(tagger, corpus)
 
     trainer.train(
-         base_path=TRAINING_CONFIG['base_path'],
+        base_path=TRAINING_CONFIG['base_path'],
         learning_rate=TRAINING_CONFIG['learning_rate'],
         mini_batch_size=TRAINING_CONFIG['mini_batch_size'],
         max_epochs=TRAINING_CONFIG['max_epochs'],
         patience=TRAINING_CONFIG['patience'],
         train_with_dev=TRAINING_CONFIG['train_with_dev'],
         save_final_model=True,
-        use_amp=TRAINING_CONFIG['use_amp'],
-        embeddings_storage_mode='gpu',  # Keep embeddings on GPU
-        monitor_test=True,  # Monitor test set during training
-        # Learning rate scheduler parameters
-        anneal_factor=0.5,  # Learning rate annealing factor
-        anneal_with_restarts=True,  # Enable learning rate restarts
-        mini_batch_chunk_size=32,  # Process long sequences in chunks
-        save_optimizer_state=True
+        use_amp=TRAINING_CONFIG['use_amp']
     )
 
 if __name__ == "__main__":
