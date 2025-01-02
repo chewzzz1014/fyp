@@ -55,7 +55,7 @@ def evaluate_flair_model(model_path: str, data_folder: str, train_file: str, tes
 
 
     # Print results to CLI
-    print("\n" + result)
+    print("\n" + str(result))
 
     # Save results to a text file
     with open(output_file, 'w') as f:
