@@ -66,6 +66,7 @@ class NERConverter:
         self.nlp = spacy.load("en_core_web_lg")
 
     def get_bioes_label(self, token_index: int, entity_length: int, current_position: int, label: str) -> str:
+        print('Start get_bioes_label()...')
         """
         Convert to BIOES format
         - S-: Single token entity
@@ -80,9 +81,12 @@ class NERConverter:
             return f'B-{label}'
         if current_position == entity_length - 1:
             return f'E-{label}'
+        print('Done get_bioes_label()...')
         return f'I-{label}'
 
     def convert_to_bioes_format(self, json_data: List[dict]) -> List[List[Tuple[str, str]]]:
+        print('Start convert_to_bioes_format()...')
+        
         """Convert JSON annotations to BIOES format."""
         all_sentences = []
 
@@ -140,17 +144,23 @@ class NERConverter:
                     all_sentences.append(current_sentence)
                     current_sentence = []
 
+        print('Done convert_to_bioes_format()...')
         return all_sentences
 
     def write_flair_file(self, sentences: List[List[Tuple[str, str]]], filename: str):
+        print('Start write_flair_file()...')
+        
         """Write sentences in BIOES format to file."""
         with open(filename, 'w', encoding='utf-8') as f:
             for sentence in sentences:
                 for token, label in sentence:
                     f.write(f'{token} {label}\n')
                 f.write('\n')
+        print('Done write_flair_file()...')
 
     def convert_and_split(self, json_data: List[dict], train_file: str, test_file: str, test_ratio: float = 0.2):
+        print('Start convert_and_split()...')
+        
         """Convert JSON to BIOES format and split into train/test sets."""
         all_sentences = self.convert_to_bioes_format(json_data)
 
@@ -166,6 +176,7 @@ class NERConverter:
         self.write_flair_file(train_sentences, train_file)
         self.write_flair_file(test_sentences, test_file)
 
+        print('Done convert_and_split()...')
         return len(train_sentences), len(test_sentences)
 
 def main():
