@@ -18,4 +18,4 @@ def ner_predict(
         entities = make_prediction(text)
         return {'entities': entities}
     except Exception as e:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail=str(e))
