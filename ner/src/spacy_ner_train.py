@@ -13,7 +13,6 @@ from spacy.lang.en import English
 import numpy as np
 import subprocess
 
-# Ensure numpy compatibility
 np.float_ = np.float64
 
 # File structure: 
@@ -36,7 +35,6 @@ SPACY_DATA_PATH = "spacy_ner_data"
 OUTPUT_PATH = "./spacy_output"
 CONFIG_PATH = "./config.cfg"
 
-# Ensure output directories exist
 os.makedirs(SPACY_DATA_PATH, exist_ok=True)
 os.makedirs(OUTPUT_PATH, exist_ok=True)
 
@@ -99,7 +97,6 @@ def count_entity_labels(file_path):
             label_counts[label] = label_counts.get(label, 0) + 1
     return label_counts
 
-# Main function
 def main():
     # Install dependencies
     install_dependencies()

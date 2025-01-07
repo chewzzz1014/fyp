@@ -1,8 +1,7 @@
 import json
-from collections import defaultdict
-import uuid  # To generate unique IDs for auto-generated annotations
-from datetime import datetime  # To update modification time
-import re  # For word boundary matching
+import uuid
+from datetime import datetime
+import re
 
 
 def auto_generate_skill_annotations(input_file, output_file):
@@ -23,18 +22,20 @@ def auto_generate_skill_annotations(input_file, output_file):
         annotations = entry["annotations"][0]["result"]
         for annotation in annotations:
             if "labels" in annotation["value"] and annotation["value"]["labels"][0] == "SKILL":
-                skill = annotation["value"]["text"].strip().lower()  # Strip whitespaces and convert to lowercase
+                # Strip whitespaces and convert to lowercase
+                skill = annotation["value"]["text"].strip().lower()
                 if skill:  # Ignore empty strings
                     skill_keywords.add(skill)
 
     print(f"Extracted SKILL keywords: {skill_keywords}")  # Debugging: View extracted skills
 
     # Process each entry in the dataset
-    total_resumes = len(data)  # Total number of resumes
-    for idx, entry in enumerate(data, start=1):  # Add a counter for progress tracking
+    total_resumes = len(data)
+    for idx, entry in enumerate(data, start=1):
         text = entry["data"]["Text"]
         annotations = entry["annotations"][0]["result"]
-        labeled_spans = []  # Keep track of existing annotated spans (start, end)
+        # Keep track of existing annotated spans (start, end)
+        labeled_spans = []
 
         # Collect existing annotation spans
         for annotation in annotations:
@@ -65,14 +66,14 @@ def auto_generate_skill_annotations(input_file, output_file):
                         "value": {
                             "start": start_pos,
                             "end": end_pos,
-                            "text": text[start_pos:end_pos],  # Preserve original casing
+                            "text": text[start_pos:end_pos],
                             "labels": ["SKILL"]
                         },
-                        "id": str(uuid.uuid4()),  # Generate a unique ID
+                        "id": str(uuid.uuid4()),
                         "from_name": "label",
                         "to_name": "text",
                         "type": "labels",
-                        "origin": "manual"  # Use 'manual' to avoid Label Studio import issues
+                        "origin": "manual"
                     })
                     # Add the new span to the list of labeled spans
                     labeled_spans.append((start_pos, end_pos))
@@ -95,7 +96,6 @@ def auto_generate_skill_annotations(input_file, output_file):
     print(f"Updated annotations saved to {output_file}")
 
 
-# Example usage
-input_file = "1142_resumes_annotated.json"  # Replace with your input file
-output_file = "updated_1142_resumes_annotated.json"  # Replace with your desired output file
+input_file = "1142_resumes_annotated.json"
+output_file = "updated_1142_resumes_annotated.json"
 auto_generate_skill_annotations(input_file, output_file)
