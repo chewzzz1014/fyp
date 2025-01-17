@@ -1,5 +1,5 @@
 # Overview
-My Bachelor Degree's Final Year Project with title **AI-Powered Job Application Management for Applicant**. There are 3 main parts in the system
+My Bachelor Degree's Final Year Project with title **AI-Powered Job Application Management for Applicant**. There are 3 main parts in the project
 1. Named Entity Recognition (NER)
    - Involved in complete machine-learning lifecycle: dataset annotation, model training, model evaluation
    - Trained 2 NER models using spaCy and Flair library, with manually-annotated resume dataset which can recognise 11 types of entities in resume and job description.
@@ -8,6 +8,7 @@ My Bachelor Degree's Final Year Project with title **AI-Powered Job Application 
    - Perform cosine similarity calculation between resume skills and job description skills which are extracted using NER trained models.
 3. ResuMatch, Job Application Management System
    - Develop job application management system consists of Job Management, Resume Management, Job-Resume Matching and Dashboard.
+   - Backend: FastAPI and uvicorn
    - Accepts resume in PDF format and job details uploaded by users
    - Perform NER prediction on resume contents (uploaded in PDF format and parsed into text) and job description.
    - Calculate job-resume matching score for each job-resume pair selected by users.
